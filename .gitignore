@@ -10,8 +10,11 @@ wheels/
 .venv
 
 # database
-db/
-./data/
+/data/*
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
+
+# Except for the 'test/data/' directory and its contents
+!test/data/
+!test/data/**/* 
