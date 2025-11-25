@@ -16,3 +16,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 data_path = Path(os.path.abspath("../../data"))
+
+import matplotlib
+# font not found, to be checked
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["font.sans-serif"] = ["Sarasa Mono TC", "Microsoft YaHei"]
