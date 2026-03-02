@@ -89,3 +89,26 @@ fabs = {
         }
     }
 }
+
+def edc_get(
+    edc_raw: pl.DataFrame, 
+    step: tuple[str, str], 
+    filter: list[pl.Expr] | None = None,
+) -> pl.DataFrame:
+    result = (
+        edc_raw.filter(
+            pl.col("SUB_EQUIP_ID").str.contains(step[0]),
+            pl.col("PARAM_NAME").str.contains(step[1])
+        )
+        # .select(
+        #     "GLASS_ID", "SUB_EQUIP_ID", "PARAM_NAME", "AVG_VALUE"
+        # )
+        .select(
+            "GLASS_ID", "AVG_VALUE"
+        )
+    )
+    
+    if filter is not None:
+        result = result.filter(*filter)
+    
+    return result.group_by(['GLASS_ID']).mean()
