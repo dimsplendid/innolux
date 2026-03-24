@@ -5,12 +5,15 @@ description = "Innolux data analysis functions"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "fastapi[standard]>=0.135.1",
     "ipywidgets>=8.1.7",
+    "jinja2>=3.1.6",
     "jupyterlab>=4.4.7",
     "matplotlib>=3.10.6",
     "pandas>=2.3.2",
     "plotly>=6.3.0",
     "polars[all]>=1.33.0",
+    "python-multipart>=0.0.22",
     "scipy>=1.16.2",
     "seaborn>=0.13.2",
     "shortuuid>=1.0.13",
@@ -22,3 +25,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.fastapi]
+entrypoint = "backend.main:app"

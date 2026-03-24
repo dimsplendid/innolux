@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>FastAPI + HTMX Excel 工具</title>
+    <!-- 引入 HTMX -->
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        .table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        .table td, .table th { border: 1px solid #ddd; padding: 8px; }
+        .table th { background-color: #f2 f2 f2; }
+    </style>
+</head>
+<body>
+    <h1>Excel 欄位加法計算器</h1>
+    
+    <!-- HTMX 上傳表單 -->
+    <form hx-post="/upload" 
+          hx-target="#result" 
+          hx-encoding="multipart/form-data">
+        <input type="file" name="file" accept=".xlsx, .xls" required>
+        <button type="submit">上傳並計算</button>
+    </form>
+
+    <!-- 結果會被渲染在這裡 -->
+    <div id="result" style="margin-top: 30px;">
+        <p>上傳檔案後，結果將顯示於此...</p>
+    </div>
+</body>
+</html>
