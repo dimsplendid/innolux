@@ -87,5 +87,75 @@ fabs = {
             "SEPB TEMP": {"step": ("1CASM", "Oven_temp"),        "filter": None},
             "SEPB TIME": {"step": ("1CASM", "HeatingTime"),      "filter": None},
         }
+    },
+    "T2": {
+        "q-time": {
+            "PIPB": {"step": ("6110_PI2_PIC",""),   "filter": None},
+            "PAUV": {"step": ("6220_PH3_PA_UV",""), "filter": None},
+            "PAPB": {"step": ("6220_PH3_OVEN",""),  "filter": None},
+            "BOOX": {"step": ("6310_AS1_ARO",""),   "filter": None},
+            "ODFX": {"step": ("6310_AS1_LCD",""),   "filter": None},
+            "SEUV": {"step": ("6310_AS1_UV_MA",""), "filter": None},
+        },
+        "edc": {
+            "PIPR TEMP"  : {"step": (r"2CPIL\d+" , r"PreCur\d+_temp"),     "filter": None},
+            "PIPR TIME"  : {"step": (r"2CPIL\d+" , r"PreCur\d+_Time"),     "filter": None},
+            "PIPB TEMP"  : {"step": (r"2CPIL\d+" , r"Oven_Temp_\d+"),      "filter": None},
+            "PIPB TIME"  : {"step": (r"2CPIL\d+" , r"Heating_Time"),       "filter": None},
+            "PAUV"       : {"step": (r"2CPHA\d+" , r"\d-\d exposure"),     "filter": None},
+            "PAPB TEMP"  : {"step": (r"2CPHA\d+" , r"Baking temp zone\d+"),"filter": None},
+            "PAPB TIME"  : {"step": (r"2CPHA\d+" , r"Heating_Time"),       "filter": None},
+            "BOOX TEMP"  : {"step": (r"2CASM\d+" , r"Oven_Temp_\d+"),      "filter": None},
+            "BOOX TIME"  : {"step": (r"2CASM\d30", r"Heating_Time"),       "filter": None},
+            "SEUV"       : {"step": (r"2CASM\dC0", r"UV_Energy"),          "filter": None},
+            "SEPB TEMP"  : {"step": (r"2CASM\dD0", r"Temp"),               "filter": None},
+            "SEPB TIME"  : {"step": (r"2CASM\dD0", r"Heating_Time"),       "filter": None},
+            "BOOX to ODF": {"step": (r"2CASM\dB0", r"ARO_ODF_QTime"),      "filter": None},
+            "ODF to SEUV": {"step": (r"2CASM\dC0", r"ODF_UV_QTime"),       "filter": None},
+        },
     }
 }
+
+def edc_get(
+    edc_raw: pl.DataFrame, 
+    step: tuple[str, str], 
+    filter: list[pl.Expr] | None = None,
+) -> pl.DataFrame:
+    result = (
+        edc_raw.filter(
+            pl.col("SUB_EQUIP_ID").str.contains(step[0]),
+            pl.col("PARAM_NAME").str.contains(step[1])
+        )
+        # .select(
+        #     "GLASS_ID", "SUB_EQUIP_ID", "PARAM_NAME", "AVG_VALUE"
+        # )
+        .select(
+            "GLASS_ID", "AVG_VALUE"
+        )
+    )
+    
+    if filter is not None:
+        result = result.filter(*filter)
+    
+    return result.group_by(['GLASS_ID']).mean()
+
+def qtime_get(
+    qtime_raw: pl.DataFrame, 
+    step: tuple[str, str], 
+    filter: list[pl.Expr] | None = None,
+) -> pl.DataFrame:
+    result = (
+        qtime_raw.filter(
+            pl.col("STEP_ID").str.contains(step[0]),
+        )
+        .select(
+            pl.col("GLASS_ID").alias("ID"), 
+            pl.col("TRACK_IN_TIME"),
+            pl.col("TRACK_OUT_TIME"),
+        )
+    )
+    
+    if filter is not None:
+        return result.filter(*filter)
+    
+    return result
