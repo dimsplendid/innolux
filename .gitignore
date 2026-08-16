@@ -21,3 +21,4 @@ wheels/
 
 # Windows temp file
 ~$*
+.~lock*
